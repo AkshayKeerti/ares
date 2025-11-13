@@ -113,7 +113,7 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
 
       <div
         className="relative w-full"
-        style={{ height: '500px', background: '#0a1628' }}
+        style={{ height: '500px', background: '#050a14' }}
         onMouseMove={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
           setTooltipPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
@@ -123,7 +123,7 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
           <Globe
             ref={globeEl}
             globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
-            backgroundColor="rgba(10, 22, 40, 0)"
+            backgroundColor="rgba(5, 10, 20, 0)"
             height={500}
           pointsData={[...facilityPoints, ...sensorPoints, ...threatPoints]}
           pointColor="color"

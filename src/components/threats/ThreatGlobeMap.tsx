@@ -101,12 +101,12 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
       <div className="p-4 border-b border-primary-border">
         <h3 className="text-lg font-black text-text-primary">Threat Position & Trajectory</h3>
       </div>
-      <div className="relative w-full" style={{ height: '600px', background: '#0a1628' }}>
+      <div className="relative w-full" style={{ height: '600px', background: '#050a14' }}>
         <div className="globe-container w-full h-full">
           <Globe
             ref={globeEl}
             globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
-            backgroundColor="rgba(10, 22, 40, 0)"
+            backgroundColor="rgba(5, 10, 20, 0)"
             height={600}
           pointsData={[facilityPoint, threatPoint, ...trajectoryPoints]}
           pointColor="color"

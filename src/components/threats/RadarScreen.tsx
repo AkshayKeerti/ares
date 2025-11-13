@@ -33,7 +33,7 @@ export const RadarScreen = ({ simulation, currentPosition }: RadarScreenProps) =
     const radius = Math.min(width, height) / 2 - 40;
 
     // Clear canvas
-    ctx.fillStyle = '#0a1628';
+    ctx.fillStyle = '#050a14';
     ctx.fillRect(0, 0, width, height);
 
     // Draw range rings
@@ -184,7 +184,7 @@ export const RadarScreen = ({ simulation, currentPosition }: RadarScreenProps) =
   const closestApproach = Math.min(...simulation.trajectory.map((p) => p.distance));
 
   return (
-    <div className="relative w-full h-full" style={{ background: '#0a1628' }}>
+    <div className="relative w-full h-full" style={{ background: '#050a14' }}>
       <canvas
         ref={canvasRef}
         width={800}

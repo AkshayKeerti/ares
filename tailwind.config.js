@@ -8,10 +8,10 @@ export default {
     extend: {
       colors: {
         primary: {
-          bg: '#0a1628',
-          'bg-secondary': '#152238',
-          'bg-card': '#1e2f4a',
-          border: '#2a3d5a',
+          bg: '#050a14',
+          'bg-secondary': '#0d1524',
+          'bg-card': '#141b2e',
+          border: '#1a2438',
         },
         accent: {
           success: '#10b981',

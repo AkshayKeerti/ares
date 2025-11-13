@@ -74,7 +74,7 @@ export const GlobeToRadarTransition = ({ simulation, currentPosition }: GlobeToR
           {phase === 'radar' ? 'Radar Display' : 'Threat Position & Trajectory'}
         </h3>
       </div>
-      <div className="relative w-full" style={{ height: '600px', background: '#0a1628' }}>
+      <div className="relative w-full" style={{ height: '600px', background: '#050a14' }}>
         {/* Globe View */}
         <div
           className="absolute inset-0 globe-container"
@@ -87,7 +87,7 @@ export const GlobeToRadarTransition = ({ simulation, currentPosition }: GlobeToR
           <Globe
             ref={globeEl}
             globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
-            backgroundColor="rgba(10, 22, 40, 0)"
+            backgroundColor="rgba(5, 10, 20, 0)"
             height={600}
             onGlobeReady={() => {
               if (globeEl.current) {
