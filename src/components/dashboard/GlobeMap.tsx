@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Globe from 'react-globe.gl';
 import { FACILITIES } from '../../utils/constants';
@@ -11,6 +11,17 @@ interface GlobeMapProps {
 export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) => {
   const navigate = useNavigate();
   const globeEl = useRef<any>(null);
+  const [hoveredPoint, setHoveredPoint] = useState<any>(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [pulseTime, setPulseTime] = useState(0);
+
+  // Update pulse animation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPulseTime(Date.now());
+    }, 50); // Update every 50ms for smooth animation
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     // Set initial view after a short delay to ensure globe is rendered
@@ -38,14 +49,15 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
     navigate('/threats');
   };
 
-  // Convert facilities to points on the globe
+  // Convert facilities to points on the globe - small pulsing dots
   const facilityPoints = FACILITIES.map((facility) => ({
     lat: facility.coordinates.lat,
     lng: facility.coordinates.lng,
-    size: 10,
+    size: 3,
     color: '#10b981',
     label: facility.name,
     altitude: 0.01,
+    type: 'facility',
   }));
 
   // Sensor positions around the first facility
@@ -59,9 +71,10 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
   const sensorPoints = sensorPositions.map((sensor) => ({
     lat: sensor.lat,
     lng: sensor.lng,
-    size: 6,
+    size: 2,
     color: sensor.color,
     type: sensor.type,
+    label: `${sensor.type} Sensor`,
   }));
 
   // Threat point if active
@@ -98,7 +111,14 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
         </button>
       </div>
 
-      <div className="relative w-full" style={{ height: '500px', background: '#0a1628' }}>
+      <div
+        className="relative w-full"
+        style={{ height: '500px', background: '#0a1628' }}
+        onMouseMove={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          setTooltipPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+        }}
+      >
         <div className="globe-container w-full h-full">
           <Globe
             ref={globeEl}
@@ -107,10 +127,29 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
             height={500}
           pointsData={[...facilityPoints, ...sensorPoints, ...threatPoints]}
           pointColor="color"
-          pointRadius="size"
-          pointResolution={8}
+          pointRadius={(d: any) => {
+            // Create pulsing effect for facilities
+            if (d.type === 'facility') {
+              const pulse = Math.sin(pulseTime / 1000) * 1.5 + 3.5;
+              return pulse;
+            }
+            return d.size;
+          }}
+          pointResolution={16}
           pointLabel={(d: any) => d.label || ''}
           pointAltitude="altitude"
+          onPointHover={(point: any) => {
+            if (point) {
+              setHoveredPoint(point);
+            } else {
+              setHoveredPoint(null);
+            }
+          }}
+          onPointClick={(point: any) => {
+            if (point && point.label) {
+              setHoveredPoint(point);
+            }
+          }}
           arcsData={arcs}
           arcColor="color"
           arcDashLength={0.3}
@@ -118,22 +157,7 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
           arcDashAnimateTime={3000}
           arcStroke={0.8}
           arcCurveResolution={64}
-          ringsData={facilityPoints.map((point) => ({
-            lat: point.lat,
-            lng: point.lng,
-            maxRadius: 15,
-            propagationSpeed: 1.5,
-            repeatPeriod: 3000,
-          }))}
-          ringColor={(t: number) => {
-            // Create a gradient effect that fades in and out
-            const opacity = Math.sin(t * Math.PI) * 0.2 + 0.1;
-            return `rgba(16, 185, 129, ${opacity})`;
-          }}
-          ringMaxRadius="maxRadius"
-          ringPropagationSpeed="propagationSpeed"
-          ringRepeatPeriod="repeatPeriod"
-          ringResolution={64}
+          // Remove rings - too intrusive, using small pulsing dots instead
           onGlobeReady={() => {
             if (globeEl.current) {
               // Center on Poland (Gdańsk area where facilities are located)
@@ -152,21 +176,60 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
           />
         </div>
 
+        {/* Hover Tooltip */}
+        {hoveredPoint && (
+          <div
+            className="absolute bg-primary-bg-card border border-primary-border rounded-lg p-3 z-50 shadow-xl pointer-events-none"
+            style={{
+              left: `${tooltipPosition.x + 10}px`,
+              top: `${tooltipPosition.y - 10}px`,
+              maxWidth: '250px',
+            }}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: hoveredPoint.color }}
+              />
+              <h4 className="text-text-primary font-black text-sm">
+                {hoveredPoint.label || hoveredPoint.type}
+              </h4>
+            </div>
+            {hoveredPoint.type === 'facility' && (
+              <div className="space-y-1 text-xs">
+                <p className="text-text-secondary font-bold">
+                  Location: {hoveredPoint.lat.toFixed(4)}°, {hoveredPoint.lng.toFixed(4)}°
+                </p>
+                <p className="text-text-secondary font-bold">Status: Active Monitoring</p>
+                <p className="text-text-secondary font-bold">Detection Range: 3km</p>
+              </div>
+            )}
+            {hoveredPoint.type && hoveredPoint.type !== 'facility' && (
+              <div className="space-y-1 text-xs">
+                <p className="text-text-secondary font-bold">
+                  Type: {hoveredPoint.type.toUpperCase()} Sensor
+                </p>
+                <p className="text-text-secondary font-bold">Status: Active</p>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Legend */}
         <div className="absolute bottom-4 left-4 bg-primary-bg-card/90 border border-primary-border rounded-lg p-3 z-10 backdrop-blur-sm">
           <p className="text-text-secondary text-xs font-bold mb-2">Detection Zone: 3km radius</p>
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-accent-success" />
-              <span className="text-text-primary text-xs font-bold">Facility</span>
+              <div className="w-2 h-2 rounded-full bg-accent-success animate-pulse" />
+              <span className="text-text-primary text-xs font-bold">Facility (hover for info)</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-accent-warning" />
+              <div className="w-2 h-2 rounded-full bg-accent-warning" />
               <span className="text-text-primary text-xs font-bold">Sensors</span>
             </div>
             {threatPosition && (
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-accent-danger animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-accent-danger animate-pulse" />
                 <span className="text-text-primary text-xs font-bold">Active Threat</span>
               </div>
             )}
