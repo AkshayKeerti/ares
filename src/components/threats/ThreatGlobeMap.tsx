@@ -72,21 +72,21 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
   const threatPoint = {
     lat: threatLat,
     lng: threatLng,
-    size: 0.5, // Reduced by ~94% from 8px
+    size: 0.15, // Very small - reduced by ~98% from 8px
     color: '#ef4444',
     altitude: currentPosition.altitude / 1000, // Convert meters to km
     label: 'Threat',
   };
 
-  // Create trajectory path - very small dots
+  // Create trajectory path - extremely small dots
   const trajectoryPoints = simulation.trajectory
     .slice(0, Math.floor(simulation.trajectory.length * 0.8))
     .map((pos) => ({
       lat: baseLat + (pos.y - 0.5) * 0.02,
       lng: baseLng + (pos.x - 0.5) * 0.02,
-      size: 0.3, // Reduced by ~70% from 1px
+      size: 0.1, // Extremely small
       color: '#ef4444',
-      opacity: 0.6,
+      opacity: 0.5,
     }));
 
   // Arc from facility to threat
@@ -118,9 +118,9 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
           pointsData={[facilityPoint, threatPoint, ...trajectoryPoints]}
           pointColor="color"
           pointRadius={(d: any) => {
-            // Make threat point pulse slightly for visibility (very small)
+            // Make threat point pulse slightly for visibility (extremely small)
             if (d.label === 'Threat') {
-              const pulse = Math.sin(pulseTime / 500) * 0.2 + 0.5;
+              const pulse = Math.sin(pulseTime / 500) * 0.05 + 0.15;
               return pulse;
             }
             return d.size;
