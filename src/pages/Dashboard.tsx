@@ -1,5 +1,5 @@
 import { ThreatOverview } from '../components/dashboard/ThreatOverview';
-import { AirspaceMap } from '../components/dashboard/AirspaceMap';
+import { GlobeMap } from '../components/dashboard/GlobeMap';
 import { SensorFusion } from '../components/dashboard/SensorFusion';
 import { ActivityFeed } from '../components/dashboard/ActivityFeed';
 
@@ -20,7 +20,7 @@ export const Dashboard = () => {
 
       <div className="grid grid-cols-3 gap-6">
         <div className="col-span-2">
-          <AirspaceMap />
+          <GlobeMap />
         </div>
         <div>
           <SensorFusion />

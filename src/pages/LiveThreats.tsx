@@ -5,7 +5,7 @@ import { ThreatAlertBanner } from '../components/threats/ThreatAlertBanner';
 import { ThreatDetails } from '../components/threats/ThreatDetails';
 import { AIClassification } from '../components/threats/AIClassification';
 import { RecommendedActions } from '../components/threats/RecommendedActions';
-import { Radio, Wifi, Camera, Volume2 } from 'lucide-react';
+import { ThreatGlobeMap } from '../components/threats/ThreatGlobeMap';
 
 export const LiveThreats = () => {
   const navigate = useNavigate();
@@ -43,13 +43,6 @@ export const LiveThreats = () => {
     );
   }
 
-  const centerX = 0.5;
-  const centerY = 0.5;
-  const detectionRadius = 0.3;
-
-  // Calculate closest approach
-  const closestApproach = Math.min(...simulation.trajectory.map(p => p.distance));
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -69,99 +62,9 @@ export const LiveThreats = () => {
       />
 
       <div className="grid grid-cols-3 gap-6">
-        {/* Map */}
+        {/* Globe Map */}
         <div className="col-span-2">
-          <div className="card p-0 overflow-hidden">
-            <div className="p-4 border-b border-primary-border">
-              <h3 className="text-lg font-black text-text-primary">Threat Position & Trajectory</h3>
-            </div>
-            <div className="relative bg-primary-bg-secondary" style={{ height: '600px' }}>
-              <svg
-                viewBox="0 0 1000 1000"
-                className="w-full h-full"
-                style={{ background: 'radial-gradient(circle at center, #2d2d2d 0%, #1a1a1a 100%)' }}
-              >
-                {/* Detection Zone */}
-                <circle
-                  cx={centerX * 1000}
-                  cy={centerY * 1000}
-                  r={detectionRadius * 1000}
-                  fill="none"
-                  stroke="#10b981"
-                  strokeWidth="2"
-                  strokeDasharray="10 5"
-                  opacity="0.3"
-                />
-
-                {/* Facility */}
-                <rect
-                  x={centerX * 1000 - 50}
-                  y={centerY * 1000 - 50}
-                  width="100"
-                  height="100"
-                  fill="#3a3a3a"
-                  stroke="#10b981"
-                  strokeWidth="3"
-                />
-
-                {/* Trajectory Line */}
-                <polyline
-                  points={simulation.trajectory
-                    .slice(0, Math.floor(simulation.trajectory.length * (currentPosition ? 1 : 0)))
-                    .map(p => `${p.x * 1000},${p.y * 1000}`)
-                    .join(' ')}
-                  fill="none"
-                  stroke="#ef4444"
-                  strokeWidth="2"
-                  opacity="0.5"
-                />
-
-                {/* Current Threat Position */}
-                <circle
-                  cx={currentPosition.x * 1000}
-                  cy={currentPosition.y * 1000}
-                  r="15"
-                  fill="#ef4444"
-                  className="animate-pulse-red"
-                />
-                <circle
-                  cx={currentPosition.x * 1000}
-                  cy={currentPosition.y * 1000}
-                  r="25"
-                  fill="none"
-                  stroke="#ef4444"
-                  strokeWidth="2"
-                  opacity="0.5"
-                  className="animate-pulse-red"
-                />
-
-                {/* Sensors */}
-                {[
-                  { x: 0.2, y: 0.3, icon: Radio },
-                  { x: 0.8, y: 0.3, icon: Wifi },
-                  { x: 0.2, y: 0.7, icon: Camera },
-                  { x: 0.8, y: 0.7, icon: Volume2 },
-                ].map((sensor, idx) => (
-                  <circle
-                    key={idx}
-                    cx={sensor.x * 1000}
-                    cy={sensor.y * 1000}
-                    r="20"
-                    fill="#10b981"
-                    opacity="0.6"
-                  />
-                ))}
-              </svg>
-
-              {/* Info Overlay */}
-              <div className="absolute bottom-4 left-4 bg-primary-bg-card/90 border border-primary-border rounded-lg p-4">
-                <p className="text-text-secondary text-xs font-bold mb-2">Closest Approach Estimate</p>
-                <p className="text-text-primary font-black">
-                  {(closestApproach / 1000).toFixed(2)}km
-                </p>
-              </div>
-            </div>
-          </div>
+          <ThreatGlobeMap simulation={simulation} currentPosition={currentPosition} />
         </div>
 
         {/* Right Panel */}

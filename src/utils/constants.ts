@@ -1,9 +1,9 @@
 export const COLORS = {
   primary: {
-    bg: '#1a1a1a',
-    bgSecondary: '#2d2d2d',
-    bgCard: '#3a3a3a',
-    border: '#4a4a4a',
+    bg: '#0a1628',
+    bgSecondary: '#152238',
+    bgCard: '#1e2f4a',
+    border: '#2a3d5a',
   },
   accent: {
     success: '#10b981',
