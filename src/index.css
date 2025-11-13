@@ -7,13 +7,13 @@
 @layer base {
   * {
     @apply font-sans;
-  }
-  
-  body {
+}
+
+body {
     @apply bg-primary-bg text-text-primary font-bold;
-    margin: 0;
-    min-height: 100vh;
-  }
+  margin: 0;
+  min-height: 100vh;
+}
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-extrabold;
@@ -23,8 +23,8 @@
 @layer components {
   .card {
     @apply bg-primary-bg-card rounded-lg border border-primary-border shadow-lg p-6;
-  }
-  
+}
+
   .btn-primary {
     @apply bg-accent-success text-white font-bold px-6 py-3 rounded-lg hover:bg-accent-success/90 transition-all duration-200 transform hover:scale-105;
   }
@@ -35,7 +35,7 @@
   
   .btn-danger {
     @apply bg-accent-danger text-white font-bold px-6 py-3 rounded-lg hover:bg-accent-danger/90 transition-all duration-200 transform hover:scale-105;
-  }
+}
 }
 
 @layer utilities {
@@ -43,7 +43,7 @@
     from {
       transform: translateY(100%);
       opacity: 0;
-    }
+}
     to {
       transform: translateY(0);
       opacity: 1;
@@ -60,7 +60,7 @@
     }
     50% {
       opacity: 0.7;
-    }
+}
   }
   
   .animate-pulse-red {

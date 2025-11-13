@@ -99,42 +99,50 @@ export const SensorFusion = () => {
           const Icon = sensor.icon;
           return (
             <div key={sensor.id} className="card overflow-hidden">
-              <div className="flex items-start justify-between mb-4 gap-4">
-                <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
                   <div className="p-2 bg-primary-bg-secondary rounded-lg flex-shrink-0">
                     <Icon className="w-5 h-5 text-text-primary" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-black text-text-primary mb-1.5 text-sm">{sensor.name}</h4>
-                    <p className="text-text-secondary text-xs font-bold leading-tight">{sensor.currentValue}</p>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-black text-text-primary truncate">{sensor.name}</h4>
+                    <p className="text-text-secondary text-xs font-bold truncate">{sensor.currentValue}</p>
                   </div>
                 </div>
-                <div className="flex-shrink-0 mt-0.5">
-                  <StatusBadge
-                    status={sensor.status === 'Active' ? 'success' : sensor.status === 'Warning' ? 'warning' : 'danger'}
-                  >
-                    {sensor.status}
-                  </StatusBadge>
-                </div>
+                <StatusBadge
+                  status={sensor.status === 'Active' ? 'success' : sensor.status === 'Warning' ? 'warning' : 'danger'}
+                  className="flex-shrink-0"
+                >
+                  {sensor.status}
+                </StatusBadge>
               </div>
 
               {sensor.type === 'Visual Camera' ? (
-                <div className="h-32 bg-primary-bg-secondary rounded-lg flex items-center justify-center border border-primary-border overflow-hidden">
-                  <div className="text-center">
+                <div className="h-32 bg-primary-bg-secondary rounded-lg flex items-center justify-center border border-primary-border overflow-hidden relative">
+                  <div className="text-center z-10">
                     <Camera className="w-8 h-8 text-text-secondary mx-auto mb-2" />
                     <p className="text-text-secondary text-xs font-bold">Camera Feed</p>
                   </div>
                 </div>
               ) : sensor.type === 'Acoustic' ? (
-                <div className="h-32 w-full overflow-hidden">
+                <div className="h-32 w-full overflow-hidden relative">
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={sensor.data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                    <AreaChart 
+                      data={sensor.data} 
+                      margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
+                    >
+                      <defs>
+                        <linearGradient id={`acousticGradient-${sensor.id}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.4} />
+                          <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0.1} />
+                        </linearGradient>
+                      </defs>
                       <Area
                         type="monotone"
                         dataKey="value"
                         stroke="#8b5cf6"
-                        fill="#8b5cf6"
-                        fillOpacity={0.3}
+                        fill={`url(#acousticGradient-${sensor.id})`}
+                        strokeWidth={2}
                       />
                       <XAxis dataKey="time" hide />
                       <YAxis hide />
@@ -142,15 +150,19 @@ export const SensorFusion = () => {
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="h-32 w-full overflow-hidden">
+                <div className="h-32 w-full overflow-hidden relative">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={sensor.data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                    <LineChart 
+                      data={sensor.data} 
+                      margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
+                    >
                       <Line
                         type="monotone"
                         dataKey="value"
                         stroke={sensor.type === 'Radar' ? '#10b981' : '#f59e0b'}
                         strokeWidth={2}
                         dot={false}
+                        isAnimationActive={false}
                       />
                       <XAxis dataKey="time" hide />
                       <YAxis hide />
