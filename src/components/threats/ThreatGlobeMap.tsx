@@ -27,11 +27,11 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
 
   useEffect(() => {
     // Set initial view after a short delay to ensure globe is rendered
-    // Zoom in close for land-based view (altitude 0.15 = ~15km view, realistic for ground-based tracking)
+    // Use standard view (not zoomed in) - let user control zoom
     const timer = setTimeout(() => {
       if (globeEl.current) {
-        // Center on Poland (Gdańsk area where facilities are located) - zoomed in for land-based view
-        globeEl.current.pointOfView({ lat: baseLat, lng: baseLng, altitude: 0.15 }, 0);
+        // Center on Poland (Gdańsk area where facilities are located) - standard view
+        globeEl.current.pointOfView({ lat: baseLat, lng: baseLng, altitude: 2.5 }, 0);
         
         const controls = globeEl.current.controls();
         if (controls) {
@@ -51,15 +51,7 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
   const threatLat = baseLat + (currentPosition.y - 0.5) * 0.02;
   const threatLng = baseLng + (currentPosition.x - 0.5) * 0.02;
 
-  // Update camera to follow threat as it moves (optional - can be enabled if desired)
-  useEffect(() => {
-    if (globeEl.current && currentPosition) {
-      // Smoothly adjust camera to keep both facility and threat in view
-      const centerLat = (baseLat + threatLat) / 2;
-      const centerLng = (baseLng + threatLng) / 2;
-      globeEl.current.pointOfView({ lat: centerLat, lng: centerLng, altitude: 0.15 }, 500);
-    }
-  }, [threatLat, threatLng, baseLat, baseLng, currentPosition]);
+  // Camera stays fixed - no automatic tracking
 
   const facilityPoint = {
     lat: baseLat,
@@ -138,8 +130,8 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
           arcAltitudeAutoScale={0.3}
           onGlobeReady={() => {
             if (globeEl.current) {
-              // Zoom in close for land-based view (altitude 0.15 = ~15km view)
-              globeEl.current.pointOfView({ lat: baseLat, lng: baseLng, altitude: 0.15 }, 1000);
+              // Standard view - no automatic zoom
+              globeEl.current.pointOfView({ lat: baseLat, lng: baseLng, altitude: 2.5 }, 1000);
               
               const controls = globeEl.current.controls();
               if (controls) {
