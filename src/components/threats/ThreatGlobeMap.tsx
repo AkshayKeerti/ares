@@ -89,13 +89,14 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
       opacity: 0.5,
     }));
 
-  // Arc from facility to threat
+  // Arc from facility to threat - make it more visible
   const threatArc = {
     startLat: baseLat,
     startLng: baseLng,
     endLat: threatLat,
     endLng: threatLng,
     color: ['#ef4444'],
+    stroke: 3,
   };
 
   // Remove detection rings - they're causing rectangular artifacts and aren't needed for close-up view
@@ -129,10 +130,12 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
           pointLabel={(d: any) => d.label || ''}
           arcsData={[threatArc]}
           arcColor="color"
-          arcDashLength={0.4}
-          arcDashGap={0.2}
-          arcDashAnimateTime={1000}
-          arcStroke={1.5}
+          arcDashLength={0.3}
+          arcDashGap={0.3}
+          arcDashAnimateTime={2000}
+          arcStroke={3}
+          arcCurveResolution={64}
+          arcAltitudeAutoScale={0.3}
           onGlobeReady={() => {
             if (globeEl.current) {
               // Zoom in close for land-based view (altitude 0.15 = ~15km view)
