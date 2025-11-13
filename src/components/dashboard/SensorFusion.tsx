@@ -98,7 +98,7 @@ export const SensorFusion = () => {
         {sensors.map((sensor) => {
           const Icon = sensor.icon;
           return (
-            <div key={sensor.id} className="card">
+            <div key={sensor.id} className="card overflow-hidden">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-primary-bg-secondary rounded-lg">
@@ -117,16 +117,16 @@ export const SensorFusion = () => {
               </div>
 
               {sensor.type === 'Visual Camera' ? (
-                <div className="h-32 bg-primary-bg-secondary rounded-lg flex items-center justify-center border border-primary-border">
+                <div className="h-32 bg-primary-bg-secondary rounded-lg flex items-center justify-center border border-primary-border overflow-hidden">
                   <div className="text-center">
                     <Camera className="w-8 h-8 text-text-secondary mx-auto mb-2" />
                     <p className="text-text-secondary text-xs font-bold">Camera Feed</p>
                   </div>
                 </div>
               ) : sensor.type === 'Acoustic' ? (
-                <div className="h-32">
+                <div className="h-32 w-full overflow-hidden">
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={sensor.data}>
+                    <AreaChart data={sensor.data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
                       <Area
                         type="monotone"
                         dataKey="value"
@@ -140,9 +140,9 @@ export const SensorFusion = () => {
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="h-32">
+                <div className="h-32 w-full overflow-hidden">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={sensor.data}>
+                    <LineChart data={sensor.data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
                       <Line
                         type="monotone"
                         dataKey="value"

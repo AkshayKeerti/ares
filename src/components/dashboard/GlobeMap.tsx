@@ -87,23 +87,23 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
 
   return (
     <div className="card p-0 overflow-hidden relative">
-      <div className="absolute top-4 left-4 z-10 flex items-center justify-between w-full pr-4">
+      <div className="absolute top-4 left-4 right-4 z-10 flex items-center justify-between">
         <h3 className="text-lg font-black text-text-primary">Live Airspace Map</h3>
         <button
           onClick={handleSimulateThreat}
-          className="btn-secondary text-sm px-4 py-2 z-20"
+          className="btn-secondary text-sm px-4 py-2 z-20 relative"
         >
           Simulate Threat
         </button>
       </div>
 
       <div className="relative w-full" style={{ height: '500px', background: '#0a1628' }}>
-        <Globe
-          ref={globeEl}
-          globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
-          backgroundColor="rgba(10, 22, 40, 0)"
-          width={undefined}
-          height={500}
+        <div className="globe-container w-full h-full">
+          <Globe
+            ref={globeEl}
+            globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+            backgroundColor="rgba(10, 22, 40, 0)"
+            height={500}
           pointsData={[...facilityPoints, ...sensorPoints, ...threatPoints]}
           pointColor="color"
           pointRadius="size"
@@ -141,10 +141,11 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
               }
             }
           }}
-        />
+          />
+        </div>
 
         {/* Legend */}
-        <div className="absolute bottom-4 left-4 bg-primary-bg-card/90 border border-primary-border rounded-lg p-3 z-10">
+        <div className="absolute bottom-4 left-4 bg-primary-bg-card/90 border border-primary-border rounded-lg p-3 z-10 backdrop-blur-sm">
           <p className="text-text-secondary text-xs font-bold mb-2">Detection Zone: 3km radius</p>
           <div className="space-y-1">
             <div className="flex items-center gap-2">
