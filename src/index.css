@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply font-sans;
+  }
+  
+  body {
+    @apply bg-primary-bg text-text-primary font-bold;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-extrabold;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-primary-bg-card rounded-lg border border-primary-border shadow-lg p-6;
+  }
+  
+  .btn-primary {
+    @apply bg-accent-success text-white font-bold px-6 py-3 rounded-lg hover:bg-accent-success/90 transition-all duration-200 transform hover:scale-105;
+  }
+  
+  .btn-secondary {
+    @apply bg-primary-bg-secondary text-text-primary font-bold px-6 py-3 rounded-lg border border-primary-border hover:bg-primary-bg-card transition-all duration-200;
+  }
+  
+  .btn-danger {
+    @apply bg-accent-danger text-white font-bold px-6 py-3 rounded-lg hover:bg-accent-danger/90 transition-all duration-200 transform hover:scale-105;
+  }
+}
+
+@layer utilities {
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
+  
+  @keyframes pulse-red {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+  
+  .animate-pulse-red {
+    animation: pulse-red 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
