@@ -62,9 +62,10 @@ export const LiveThreats = () => {
       />
 
       <div className="grid grid-cols-3 gap-6">
-        {/* Globe to Radar Transition */}
-        <div className="col-span-2">
+        {/* Left Column - Radar and Recommended Actions */}
+        <div className="col-span-2 space-y-6">
           <GlobeToRadarTransition simulation={simulation} currentPosition={currentPosition} />
+          <RecommendedActions onExecuteCountermeasure={handleExecuteCountermeasure} />
         </div>
 
         {/* Right Panel */}
@@ -77,7 +78,6 @@ export const LiveThreats = () => {
             }}
           />
           <AIClassification threatType={simulation.threatType} />
-          <RecommendedActions onExecuteCountermeasure={handleExecuteCountermeasure} />
 
           {/* Timeline */}
           <div className="card">
@@ -87,11 +87,11 @@ export const LiveThreats = () => {
                 <span className="text-text-secondary font-bold">Detection</span>
                 <span className="text-text-primary font-black">00:00</span>
               </div>
-              <div className="h-2 bg-primary-bg-secondary rounded-full overflow-hidden">
+              <div className="h-2 bg-primary-bg-secondary rounded-full overflow-hidden w-full">
                 <div
                   className="h-full bg-accent-danger transition-all duration-500"
                   style={{
-                    width: `${(currentPosition.distance / simulation.initialDistance) * 100}%`,
+                    width: `${Math.min(100, (currentPosition.distance / simulation.initialDistance) * 100)}%`,
                   }}
                 />
               </div>
