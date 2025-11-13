@@ -9,7 +9,6 @@ interface RadarScreenProps {
 export const RadarScreen = ({ simulation, currentPosition }: RadarScreenProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [sweepAngle, setSweepAngle] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(true);
 
   // Animate radar sweep
   useEffect(() => {
@@ -17,12 +16,6 @@ export const RadarScreen = ({ simulation, currentPosition }: RadarScreenProps) =
       setSweepAngle((prev) => (prev + 2) % 360);
     }, 50);
     return () => clearInterval(interval);
-  }, []);
-
-  // Transition animation
-  useEffect(() => {
-    const timer = setTimeout(() => setIsTransitioning(false), 1000);
-    return () => clearTimeout(timer);
   }, []);
 
   // Draw radar screen
@@ -191,49 +184,40 @@ export const RadarScreen = ({ simulation, currentPosition }: RadarScreenProps) =
   const closestApproach = Math.min(...simulation.trajectory.map((p) => p.distance));
 
   return (
-    <div className="card p-0 overflow-hidden relative">
-      <div className="p-4 border-b border-primary-border">
-        <h3 className="text-lg font-black text-text-primary">Radar Display</h3>
-      </div>
-      <div className="relative w-full" style={{ height: '600px', background: '#0a1628' }}>
-        <canvas
-          ref={canvasRef}
-          width={800}
-          height={600}
-          className="w-full h-full"
-          style={{
-            opacity: isTransitioning ? 0 : 1,
-            transition: 'opacity 1s ease-in',
-          }}
-        />
-        
-        {/* Info Overlay */}
-        <div className="absolute bottom-4 right-4 bg-primary-bg-card/90 border border-primary-border rounded-lg p-4 z-10">
-          <p className="text-text-secondary text-xs font-bold mb-2">Closest Approach</p>
-          <p className="text-text-primary font-black text-lg">
-            {(closestApproach / 1000).toFixed(2)}km
-          </p>
-          <div className="mt-3 pt-3 border-t border-primary-border">
-            <p className="text-text-secondary text-xs font-bold mb-1">Detection Range</p>
-            <p className="text-text-primary font-bold text-sm">3.0km</p>
-          </div>
+    <div className="relative w-full h-full" style={{ background: '#0a1628' }}>
+      <canvas
+        ref={canvasRef}
+        width={800}
+        height={600}
+        className="w-full h-full"
+      />
+      
+      {/* Info Overlay */}
+      <div className="absolute bottom-4 right-4 bg-primary-bg-card/90 border border-primary-border rounded-lg p-4 z-10">
+        <p className="text-text-secondary text-xs font-bold mb-2">Closest Approach</p>
+        <p className="text-text-primary font-black text-lg">
+          {(closestApproach / 1000).toFixed(2)}km
+        </p>
+        <div className="mt-3 pt-3 border-t border-primary-border">
+          <p className="text-text-secondary text-xs font-bold mb-1">Detection Range</p>
+          <p className="text-text-primary font-bold text-sm">3.0km</p>
         </div>
+      </div>
 
-        {/* Legend */}
-        <div className="absolute top-4 right-4 bg-primary-bg-card/90 border border-primary-border rounded-lg p-3 z-10">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-accent-success" />
-              <span className="text-text-primary text-xs font-bold">Base</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-accent-danger animate-pulse" />
-              <span className="text-text-primary text-xs font-bold">Threat</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-4 bg-accent-success" />
-              <span className="text-text-primary text-xs font-bold">Range Rings</span>
-            </div>
+      {/* Legend */}
+      <div className="absolute top-4 right-4 bg-primary-bg-card/90 border border-primary-border rounded-lg p-3 z-10">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-accent-success" />
+            <span className="text-text-primary text-xs font-bold">Base</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-accent-danger animate-pulse" />
+            <span className="text-text-primary text-xs font-bold">Threat</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-4 bg-accent-success" />
+            <span className="text-text-primary text-xs font-bold">Range Rings</span>
           </div>
         </div>
       </div>
