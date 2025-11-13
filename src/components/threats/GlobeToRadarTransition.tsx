@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import Globe from 'react-globe.gl';
 import type { ThreatSimulation, ThreatPosition } from '../../data/mockThreats';
 import { FACILITIES } from '../../utils/constants';
@@ -65,26 +65,47 @@ export const GlobeToRadarTransition = ({ simulation, currentPosition }: GlobeToR
     };
   }, [baseLat, baseLng]);
 
-  // Convert relative position to lat/lng
-  const threatLat = baseLat + (currentPosition.y - 0.5) * 0.02;
-  const threatLng = baseLng + (currentPosition.x - 0.5) * 0.02;
+  // Convert relative position to lat/lng - memoize to prevent recreation
+  const pointsData = useMemo(() => {
+    const threatLat = baseLat + (currentPosition.y - 0.5) * 0.02;
+    const threatLng = baseLng + (currentPosition.x - 0.5) * 0.02;
 
-  const facilityPoint = {
-    lat: baseLat,
-    lng: baseLng,
-    size: 2,
-    color: '#10b981',
-    label: facility.name,
-  };
+    // Ensure minimum separation between facility and threat to prevent overlap
+    const minSeparation = 0.001; // Minimum 0.001 degrees separation
+    const latDiff = Math.abs(threatLat - baseLat);
+    const lngDiff = Math.abs(threatLng - baseLng);
+    
+    let finalThreatLat = threatLat;
+    let finalThreatLng = threatLng;
+    
+    if (latDiff < minSeparation && lngDiff < minSeparation) {
+      // If too close, push threat away slightly
+      const angle = Math.atan2(threatLat - baseLat, threatLng - baseLng);
+      finalThreatLat = baseLat + Math.sin(angle) * minSeparation;
+      finalThreatLng = baseLng + Math.cos(angle) * minSeparation;
+    }
 
-  const threatPoint = {
-    lat: threatLat,
-    lng: threatLng,
-    size: 3,
-    color: '#ef4444',
-    altitude: currentPosition.altitude / 1000,
-    label: 'Threat',
-  };
+    return [
+      {
+        lat: baseLat,
+        lng: baseLng,
+        size: 2,
+        color: '#10b981',
+        label: facility.name,
+        altitude: 0.01, // Slightly above ground
+        id: 'facility',
+      },
+      {
+        lat: finalThreatLat,
+        lng: finalThreatLng,
+        size: 3,
+        color: '#ef4444',
+        altitude: Math.max(0.05, currentPosition.altitude / 1000), // Ensure minimum altitude separation
+        label: 'Threat',
+        id: 'threat',
+      },
+    ];
+  }, [baseLat, baseLng, currentPosition.y, currentPosition.x, currentPosition.altitude, facility.name]);
 
   return (
     <div className="card p-0 overflow-hidden relative">
@@ -108,10 +129,11 @@ export const GlobeToRadarTransition = ({ simulation, currentPosition }: GlobeToR
             globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
             backgroundColor="rgba(10, 22, 40, 0)"
             height={600}
-            pointsData={[facilityPoint, threatPoint]}
+            pointsData={pointsData}
             pointColor="color"
-            pointRadius={(d: any) => d.size}
-            pointResolution={16}
+            pointRadius={(d: any) => d.size || 2}
+            pointResolution={32}
+            pointAltitude="altitude"
             pointLabel={(d: any) => d.label || ''}
             onGlobeReady={() => {
               if (globeEl.current) {
