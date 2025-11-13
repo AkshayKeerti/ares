@@ -13,11 +13,22 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
   const globeEl = useRef<any>(null);
 
   useEffect(() => {
-    if (globeEl.current) {
-      // Auto-rotate the globe
-      globeEl.current.controls().autoRotate = true;
-      globeEl.current.controls().autoRotateSpeed = 0.5;
-    }
+    // Set initial view after a short delay to ensure globe is rendered
+    const timer = setTimeout(() => {
+      if (globeEl.current) {
+        // Center on Poland (Gdańsk area where facilities are located)
+        globeEl.current.pointOfView({ lat: 54.3520, lng: 18.6466, altitude: 2.5 }, 0);
+        
+        // Auto-rotate the globe
+        const controls = globeEl.current.controls();
+        if (controls) {
+          controls.autoRotate = true;
+          controls.autoRotateSpeed = 0.5;
+        }
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   const handleSimulateThreat = () => {
@@ -86,11 +97,13 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
         </button>
       </div>
 
-      <div className="relative" style={{ height: '500px', background: '#0a1628' }}>
+      <div className="relative w-full" style={{ height: '500px', background: '#0a1628' }}>
         <Globe
           ref={globeEl}
           globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
           backgroundColor="rgba(10, 22, 40, 0)"
+          width={undefined}
+          height={500}
           pointsData={[...facilityPoints, ...sensorPoints, ...threatPoints]}
           pointColor="color"
           pointRadius="size"
@@ -115,7 +128,17 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
           ringRepeatPeriod="repeatPeriod"
           onGlobeReady={() => {
             if (globeEl.current) {
+              // Center on Poland (Gdańsk area where facilities are located)
               globeEl.current.pointOfView({ lat: 54.3520, lng: 18.6466, altitude: 2.5 }, 1000);
+              
+              // Enable auto-rotation
+              const controls = globeEl.current.controls();
+              if (controls) {
+                controls.autoRotate = true;
+                controls.autoRotateSpeed = 0.5;
+                controls.enableZoom = true;
+                controls.enableRotate = true;
+              }
             }
           }}
         />

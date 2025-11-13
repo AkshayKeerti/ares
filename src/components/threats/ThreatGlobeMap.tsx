@@ -12,11 +12,19 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
   const globeEl = useRef<any>(null);
 
   useEffect(() => {
-    if (globeEl.current) {
-      globeEl.current.controls().enableZoom = true;
-      globeEl.current.controls().enableRotate = true;
-      globeEl.current.controls().autoRotate = false;
-    }
+    // Set initial view after a short delay to ensure globe is rendered
+    const timer = setTimeout(() => {
+      if (globeEl.current) {
+        const controls = globeEl.current.controls();
+        if (controls) {
+          controls.enableZoom = true;
+          controls.enableRotate = true;
+          controls.autoRotate = false;
+        }
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   // Convert relative position to lat/lng (approximate, using first facility as center)
@@ -84,11 +92,13 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
       <div className="p-4 border-b border-primary-border">
         <h3 className="text-lg font-black text-text-primary">Threat Position & Trajectory</h3>
       </div>
-      <div className="relative" style={{ height: '600px', background: '#0a1628' }}>
+      <div className="relative w-full" style={{ height: '600px', background: '#0a1628' }}>
         <Globe
           ref={globeEl}
           globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
           backgroundColor="rgba(10, 22, 40, 0)"
+          width={undefined}
+          height={600}
           pointsData={[facilityPoint, threatPoint, ...trajectoryPoints]}
           pointColor="color"
           pointRadius="size"
