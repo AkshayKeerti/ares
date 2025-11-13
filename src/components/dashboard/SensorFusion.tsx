@@ -99,21 +99,23 @@ export const SensorFusion = () => {
           const Icon = sensor.icon;
           return (
             <div key={sensor.id} className="card overflow-hidden">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-primary-bg-secondary rounded-lg">
+              <div className="flex items-start justify-between mb-4 gap-4">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="p-2 bg-primary-bg-secondary rounded-lg flex-shrink-0">
                     <Icon className="w-5 h-5 text-text-primary" />
                   </div>
-                  <div>
-                    <h4 className="font-black text-text-primary">{sensor.name}</h4>
-                    <p className="text-text-secondary text-xs font-bold">{sensor.currentValue}</p>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-black text-text-primary mb-1.5 text-sm">{sensor.name}</h4>
+                    <p className="text-text-secondary text-xs font-bold leading-tight">{sensor.currentValue}</p>
                   </div>
                 </div>
-                <StatusBadge
-                  status={sensor.status === 'Active' ? 'success' : sensor.status === 'Warning' ? 'warning' : 'danger'}
-                >
-                  {sensor.status}
-                </StatusBadge>
+                <div className="flex-shrink-0 mt-0.5">
+                  <StatusBadge
+                    status={sensor.status === 'Active' ? 'success' : sensor.status === 'Warning' ? 'warning' : 'danger'}
+                  >
+                    {sensor.status}
+                  </StatusBadge>
+                </div>
               </div>
 
               {sensor.type === 'Visual Camera' ? (
