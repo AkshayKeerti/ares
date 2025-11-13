@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Radio, Wifi, Camera, Volume2 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { StatusBadge } from '../shared/StatusBadge';
 
 interface SensorData {
   id: string;
@@ -98,22 +97,17 @@ export const SensorFusion = () => {
         {sensors.map((sensor) => {
           const Icon = sensor.icon;
           return (
-            <div key={sensor.id} className="card">
-              <div className="flex items-center justify-end mb-3">
-                <StatusBadge
-                  status={sensor.status === 'Active' ? 'success' : sensor.status === 'Warning' ? 'warning' : 'danger'}
-                  className="whitespace-nowrap"
-                >
-                  {sensor.status}
-                </StatusBadge>
+            <div key={sensor.id} className="card relative" style={{ overflow: 'visible' }}>
+              <div className="absolute top-4 right-4 z-10">
+                <div className="w-3 h-3 rounded-full bg-accent-success" />
               </div>
-              <div className="flex items-center mb-4 gap-3">
+              <div className="flex items-center mb-4 gap-3 pr-8">
                 <div className="p-2 bg-primary-bg-secondary rounded-lg flex-shrink-0">
                   <Icon className="w-5 h-5 text-text-primary" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h4 className="font-black text-text-primary truncate">{sensor.name}</h4>
-                  <p className="text-text-secondary text-xs font-bold truncate">{sensor.currentValue}</p>
+                  <h4 className="font-black text-text-primary">{sensor.name}</h4>
+                  <p className="text-text-secondary text-xs font-bold">{sensor.currentValue}</p>
                 </div>
               </div>
 
