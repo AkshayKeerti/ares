@@ -22,8 +22,13 @@ export const Navbar = ({ selectedSite, onSiteChange, notifications }: NavbarProp
       <div className="flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-4">
-          <div className="text-2xl font-black text-text-primary">
-            ARES
+          <div className="flex items-center gap-2">
+            <img
+              src="/aresLogo.png"
+              alt="Ares Logo"
+              className="h-8 w-8 object-contain"
+            />
+            <span className="text-2xl font-black text-text-primary">Ares</span>
           </div>
           <div className="h-6 w-px bg-primary-border" />
           

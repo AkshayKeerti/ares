@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield } from 'lucide-react';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
@@ -28,11 +27,13 @@ export const Login = () => {
         <div className="card text-center">
           {/* Logo */}
           <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="w-16 h-16 bg-accent-success/20 rounded-lg flex items-center justify-center">
-              <Shield className="w-8 h-8 text-accent-success" />
-            </div>
+            <img
+              src="/aresLogo.png"
+              alt="Ares Logo"
+              className="w-16 h-16 object-contain"
+            />
             <div className="text-left">
-              <h1 className="text-4xl font-black text-text-primary">ARES</h1>
+              <h1 className="text-4xl font-black text-text-primary">Ares</h1>
               <p className="text-xs text-text-secondary font-bold">Autonomous Counter-UAS</p>
             </div>
           </div>

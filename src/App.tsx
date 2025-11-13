@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
@@ -7,6 +8,7 @@ import { IncidentHistory } from './pages/IncidentHistory';
 import { Configuration } from './pages/Configuration';
 import { Reports } from './pages/Reports';
 import { Layout } from './components/layout/Layout';
+import { SplashScreen } from './components/shared/SplashScreen';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   // In a real app, check authentication here
@@ -15,6 +17,20 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    // Check if splash has been shown in this session
+    const splashShown = sessionStorage.getItem('ares-splash-shown');
+    if (splashShown) {
+      setShowSplash(false);
+    }
+  }, []);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+    sessionStorage.setItem('ares-splash-shown', 'true');
+  };
 
   return (
     <BrowserRouter>
@@ -70,6 +86,7 @@ function App() {
         />
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
+      {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
     </BrowserRouter>
   );
 }
