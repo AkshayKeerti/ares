@@ -42,9 +42,10 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
   const facilityPoints = FACILITIES.map((facility) => ({
     lat: facility.coordinates.lat,
     lng: facility.coordinates.lng,
-    size: 8,
+    size: 10,
     color: '#10b981',
     label: facility.name,
+    altitude: 0.01,
   }));
 
   // Sensor positions around the first facility
@@ -107,25 +108,32 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
           pointsData={[...facilityPoints, ...sensorPoints, ...threatPoints]}
           pointColor="color"
           pointRadius="size"
-          pointResolution={2}
+          pointResolution={8}
           pointLabel={(d: any) => d.label || ''}
+          pointAltitude="altitude"
           arcsData={arcs}
           arcColor="color"
-          arcDashLength={0.4}
-          arcDashGap={0.2}
-          arcDashAnimateTime={2000}
-          arcStroke={1}
+          arcDashLength={0.3}
+          arcDashGap={0.4}
+          arcDashAnimateTime={3000}
+          arcStroke={0.8}
+          arcCurveResolution={64}
           ringsData={facilityPoints.map((point) => ({
             lat: point.lat,
             lng: point.lng,
-            maxRadius: 20,
-            propagationSpeed: 2,
-            repeatPeriod: 2000,
+            maxRadius: 15,
+            propagationSpeed: 1.5,
+            repeatPeriod: 3000,
           }))}
-          ringColor={() => 'rgba(16, 185, 129, 0.3)'}
+          ringColor={(t: number) => {
+            // Create a gradient effect that fades in and out
+            const opacity = Math.sin(t * Math.PI) * 0.2 + 0.1;
+            return `rgba(16, 185, 129, ${opacity})`;
+          }}
           ringMaxRadius="maxRadius"
           ringPropagationSpeed="propagationSpeed"
           ringRepeatPeriod="repeatPeriod"
+          ringResolution={64}
           onGlobeReady={() => {
             if (globeEl.current) {
               // Center on Poland (Gdańsk area where facilities are located)
