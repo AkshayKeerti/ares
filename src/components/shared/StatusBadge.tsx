@@ -16,11 +16,11 @@ export const StatusBadge = ({ status, children, className = '' }: StatusBadgePro
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border font-bold text-xs whitespace-nowrap ${statusStyles[status]} ${className}`}
-      style={{ minWidth: 'fit-content' }}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border font-bold text-xs whitespace-nowrap ${statusStyles[status]} ${className}`}
+      style={{ minWidth: 'fit-content', maxWidth: 'none', flexShrink: 0 }}
     >
       <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${status === 'success' ? 'bg-accent-success' : status === 'warning' ? 'bg-accent-warning' : status === 'danger' ? 'bg-accent-danger' : 'bg-blue-400'}`} />
-      <span className="whitespace-nowrap leading-tight">{children}</span>
+      <span className="whitespace-nowrap">{children}</span>
     </span>
   );
 };

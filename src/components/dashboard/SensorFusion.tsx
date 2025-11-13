@@ -94,28 +94,26 @@ export const SensorFusion = () => {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-black text-text-primary">Sensor Fusion</h3>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4" style={{ minWidth: 0 }}>
         {sensors.map((sensor) => {
           const Icon = sensor.icon;
           return (
-            <div key={sensor.id} className="card" style={{ overflow: 'visible' }}>
-              <div className="flex items-center justify-between mb-4 gap-4">
-                <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <div className="p-2 bg-primary-bg-secondary rounded-lg flex-shrink-0">
-                    <Icon className="w-5 h-5 text-text-primary" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="font-black text-text-primary truncate">{sensor.name}</h4>
-                    <p className="text-text-secondary text-xs font-bold truncate">{sensor.currentValue}</p>
-                  </div>
+            <div key={sensor.id} className="card relative" style={{ overflow: 'visible' }}>
+              <div className="absolute top-4 right-4 z-10">
+                <StatusBadge
+                  status={sensor.status === 'Active' ? 'success' : sensor.status === 'Warning' ? 'warning' : 'danger'}
+                  className="whitespace-nowrap"
+                >
+                  {sensor.status}
+                </StatusBadge>
+              </div>
+              <div className="flex items-center mb-4 gap-3 pr-20">
+                <div className="p-2 bg-primary-bg-secondary rounded-lg flex-shrink-0">
+                  <Icon className="w-5 h-5 text-text-primary" />
                 </div>
-                <div className="flex-shrink-0 ml-auto">
-                  <StatusBadge
-                    status={sensor.status === 'Active' ? 'success' : sensor.status === 'Warning' ? 'warning' : 'danger'}
-                    className="whitespace-nowrap"
-                  >
-                    {sensor.status}
-                  </StatusBadge>
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-black text-text-primary truncate">{sensor.name}</h4>
+                  <p className="text-text-secondary text-xs font-bold truncate">{sensor.currentValue}</p>
                 </div>
               </div>
 
