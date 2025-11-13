@@ -98,8 +98,8 @@ export const SensorFusion = () => {
         {sensors.map((sensor) => {
           const Icon = sensor.icon;
           return (
-            <div key={sensor.id} className="card relative" style={{ overflow: 'visible' }}>
-              <div className="absolute top-4 right-4 z-10">
+            <div key={sensor.id} className="card">
+              <div className="flex items-center justify-end mb-3">
                 <StatusBadge
                   status={sensor.status === 'Active' ? 'success' : sensor.status === 'Warning' ? 'warning' : 'danger'}
                   className="whitespace-nowrap"
@@ -107,7 +107,7 @@ export const SensorFusion = () => {
                   {sensor.status}
                 </StatusBadge>
               </div>
-              <div className="flex items-center mb-4 gap-3 pr-20">
+              <div className="flex items-center mb-4 gap-3">
                 <div className="p-2 bg-primary-bg-secondary rounded-lg flex-shrink-0">
                   <Icon className="w-5 h-5 text-text-primary" />
                 </div>
