@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Globe from 'react-globe.gl';
 import type { ThreatSimulation, ThreatPosition } from '../../data/mockThreats';
 import { FACILITIES } from '../../utils/constants';
@@ -10,6 +10,15 @@ interface ThreatGlobeMapProps {
 
 export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapProps) => {
   const globeEl = useRef<any>(null);
+  const [pulseTime, setPulseTime] = useState(0);
+
+  // Update pulse animation for threat point
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPulseTime(Date.now());
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
 
   // Convert relative position to lat/lng (approximate, using first facility as center)
   const facility = FACILITIES[0];
@@ -18,10 +27,11 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
 
   useEffect(() => {
     // Set initial view after a short delay to ensure globe is rendered
+    // Zoom in close for land-based view (altitude 0.15 = ~15km view, realistic for ground-based tracking)
     const timer = setTimeout(() => {
       if (globeEl.current) {
-        // Center on Poland (Gdańsk area where facilities are located)
-        globeEl.current.pointOfView({ lat: baseLat, lng: baseLng, altitude: 2 }, 0);
+        // Center on Poland (Gdańsk area where facilities are located) - zoomed in for land-based view
+        globeEl.current.pointOfView({ lat: baseLat, lng: baseLng, altitude: 0.15 }, 0);
         
         const controls = globeEl.current.controls();
         if (controls) {
@@ -37,8 +47,19 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
 
   // Convert relative position (0-1) to lat/lng offset
   // Rough approximation: 0.1 in relative units ≈ 0.01 degrees
+  // Use currentPosition to calculate threat location dynamically
   const threatLat = baseLat + (currentPosition.y - 0.5) * 0.02;
   const threatLng = baseLng + (currentPosition.x - 0.5) * 0.02;
+
+  // Update camera to follow threat as it moves (optional - can be enabled if desired)
+  useEffect(() => {
+    if (globeEl.current && currentPosition) {
+      // Smoothly adjust camera to keep both facility and threat in view
+      const centerLat = (baseLat + threatLat) / 2;
+      const centerLng = (baseLng + threatLng) / 2;
+      globeEl.current.pointOfView({ lat: centerLat, lng: centerLng, altitude: 0.15 }, 500);
+    }
+  }, [threatLat, threatLng, baseLat, baseLng, currentPosition]);
 
   const facilityPoint = {
     lat: baseLat,
@@ -51,20 +72,21 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
   const threatPoint = {
     lat: threatLat,
     lng: threatLng,
-    size: 1.5, // Reduced by ~90% from 15
+    size: 8, // Make threat point visible and prominent
     color: '#ef4444',
     altitude: currentPosition.altitude / 1000, // Convert meters to km
+    label: 'Threat',
   };
 
-  // Create trajectory path
+  // Create trajectory path - make it more visible
   const trajectoryPoints = simulation.trajectory
     .slice(0, Math.floor(simulation.trajectory.length * 0.8))
     .map((pos) => ({
       lat: baseLat + (pos.y - 0.5) * 0.02,
       lng: baseLng + (pos.x - 0.5) * 0.02,
-      size: 0.3, // Reduced by ~90% from 3
+      size: 1, // Make trajectory points visible
       color: '#ef4444',
-      opacity: 0.5,
+      opacity: 0.6,
     }));
 
   // Arc from facility to threat
@@ -76,16 +98,7 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
     color: ['#ef4444'],
   };
 
-  // Detection rings
-  const rings = [
-    {
-      lat: baseLat,
-      lng: baseLng,
-      maxRadius: 30,
-      propagationSpeed: 3,
-      repeatPeriod: 2000,
-    },
-  ];
+  // Remove detection rings - they're causing rectangular artifacts and aren't needed for close-up view
 
   // Calculate closest approach
   const closestApproach = Math.min(...simulation.trajectory.map((p) => p.distance));
@@ -104,24 +117,26 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
             height={600}
           pointsData={[facilityPoint, threatPoint, ...trajectoryPoints]}
           pointColor="color"
-          pointRadius="size"
-          pointResolution={2}
+          pointRadius={(d: any) => {
+            // Make threat point pulse to be more visible
+            if (d.label === 'Threat') {
+              const pulse = Math.sin(pulseTime / 500) * 2 + 8;
+              return pulse;
+            }
+            return d.size;
+          }}
+          pointResolution={16}
           pointLabel={(d: any) => d.label || ''}
           arcsData={[threatArc]}
           arcColor="color"
           arcDashLength={0.4}
           arcDashGap={0.2}
           arcDashAnimateTime={1000}
-          arcStroke={2}
-          ringsData={rings}
-          ringColor={() => 'rgba(239, 68, 68, 0.4)'}
-          ringMaxRadius="maxRadius"
-          ringPropagationSpeed="propagationSpeed"
-          ringRepeatPeriod="repeatPeriod"
+          arcStroke={1.5}
           onGlobeReady={() => {
             if (globeEl.current) {
-              // Center on Poland (Gdańsk area where facilities are located)
-              globeEl.current.pointOfView({ lat: baseLat, lng: baseLng, altitude: 2 }, 1000);
+              // Zoom in close for land-based view (altitude 0.15 = ~15km view)
+              globeEl.current.pointOfView({ lat: baseLat, lng: baseLng, altitude: 0.15 }, 1000);
               
               const controls = globeEl.current.controls();
               if (controls) {
