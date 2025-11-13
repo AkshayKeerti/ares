@@ -11,10 +11,18 @@ interface ThreatGlobeMapProps {
 export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapProps) => {
   const globeEl = useRef<any>(null);
 
+  // Convert relative position to lat/lng (approximate, using first facility as center)
+  const facility = FACILITIES[0];
+  const baseLat = facility.coordinates.lat;
+  const baseLng = facility.coordinates.lng;
+
   useEffect(() => {
     // Set initial view after a short delay to ensure globe is rendered
     const timer = setTimeout(() => {
       if (globeEl.current) {
+        // Center on Poland (Gdańsk area where facilities are located)
+        globeEl.current.pointOfView({ lat: baseLat, lng: baseLng, altitude: 2 }, 0);
+        
         const controls = globeEl.current.controls();
         if (controls) {
           controls.enableZoom = true;
@@ -25,12 +33,7 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
     }, 100);
     
     return () => clearTimeout(timer);
-  }, []);
-
-  // Convert relative position to lat/lng (approximate, using first facility as center)
-  const facility = FACILITIES[0];
-  const baseLat = facility.coordinates.lat;
-  const baseLng = facility.coordinates.lng;
+  }, [baseLat, baseLng]);
 
   // Convert relative position (0-1) to lat/lng offset
   // Rough approximation: 0.1 in relative units ≈ 0.01 degrees
@@ -40,7 +43,7 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
   const facilityPoint = {
     lat: baseLat,
     lng: baseLng,
-    size: 10,
+    size: 0.5, // Reduced by ~95% from 10
     color: '#10b981',
     label: facility.name,
   };
@@ -48,7 +51,7 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
   const threatPoint = {
     lat: threatLat,
     lng: threatLng,
-    size: 15,
+    size: 1.5, // Reduced by ~90% from 15
     color: '#ef4444',
     altitude: currentPosition.altitude / 1000, // Convert meters to km
   };
@@ -59,7 +62,7 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
     .map((pos) => ({
       lat: baseLat + (pos.y - 0.5) * 0.02,
       lng: baseLng + (pos.x - 0.5) * 0.02,
-      size: 3,
+      size: 0.3, // Reduced by ~90% from 3
       color: '#ef4444',
       opacity: 0.5,
     }));
@@ -93,12 +96,12 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
         <h3 className="text-lg font-black text-text-primary">Threat Position & Trajectory</h3>
       </div>
       <div className="relative w-full" style={{ height: '600px', background: '#0a1628' }}>
-        <Globe
-          ref={globeEl}
-          globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
-          backgroundColor="rgba(10, 22, 40, 0)"
-          width={undefined}
-          height={600}
+        <div className="globe-container w-full h-full">
+          <Globe
+            ref={globeEl}
+            globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+            backgroundColor="rgba(10, 22, 40, 0)"
+            height={600}
           pointsData={[facilityPoint, threatPoint, ...trajectoryPoints]}
           pointColor="color"
           pointRadius="size"
@@ -117,10 +120,19 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
           ringRepeatPeriod="repeatPeriod"
           onGlobeReady={() => {
             if (globeEl.current) {
+              // Center on Poland (Gdańsk area where facilities are located)
               globeEl.current.pointOfView({ lat: baseLat, lng: baseLng, altitude: 2 }, 1000);
+              
+              const controls = globeEl.current.controls();
+              if (controls) {
+                controls.enableZoom = true;
+                controls.enableRotate = true;
+                controls.autoRotate = false;
+              }
             }
           }}
-        />
+          />
+        </div>
 
         {/* Info Overlay */}
         <div className="absolute bottom-4 left-4 bg-primary-bg-card/90 border border-primary-border rounded-lg p-4 z-10">

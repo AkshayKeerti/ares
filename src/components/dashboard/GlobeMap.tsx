@@ -49,11 +49,11 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
     navigate('/threats');
   };
 
-  // Convert facilities to points on the globe - small pulsing dots
+  // Convert facilities to points on the globe - very small pulsing dots
   const facilityPoints = FACILITIES.map((facility) => ({
     lat: facility.coordinates.lat,
     lng: facility.coordinates.lng,
-    size: 3,
+    size: 0.5, // Reduced by ~85% from 3
     color: '#10b981',
     label: facility.name,
     altitude: 0.01,
@@ -71,19 +71,19 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
   const sensorPoints = sensorPositions.map((sensor) => ({
     lat: sensor.lat,
     lng: sensor.lng,
-    size: 2,
+    size: 0.3, // Reduced by ~85% from 2
     color: sensor.color,
     type: sensor.type,
     label: `${sensor.type} Sensor`,
   }));
 
-  // Threat point if active
+  // Threat point if active - also smaller
   const threatPoints = threatPosition
     ? [
         {
           lat: threatPosition.lat,
           lng: threatPosition.lng,
-          size: 12,
+          size: 1.5, // Reduced by ~87% from 12
           color: '#ef4444',
           altitude: threatPosition.altitude / 1000, // Convert meters to km
         },
@@ -128,9 +128,9 @@ export const GlobeMap = ({ onSimulateThreat, threatPosition }: GlobeMapProps) =>
           pointsData={[...facilityPoints, ...sensorPoints, ...threatPoints]}
           pointColor="color"
           pointRadius={(d: any) => {
-            // Create pulsing effect for facilities
+            // Create pulsing effect for facilities - very small dots
             if (d.type === 'facility') {
-              const pulse = Math.sin(pulseTime / 1000) * 1.5 + 3.5;
+              const pulse = Math.sin(pulseTime / 1000) * 0.3 + 0.5; // Reduced by ~85%
               return pulse;
             }
             return d.size;
