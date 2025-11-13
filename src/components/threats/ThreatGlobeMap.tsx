@@ -64,31 +64,31 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
   const threatPoint = {
     lat: threatLat,
     lng: threatLng,
-    size: 0.15, // Very small - reduced by ~98% from 8px
+    size: 2, // Increased for visibility
     color: '#ef4444',
     altitude: currentPosition.altitude / 1000, // Convert meters to km
     label: 'Threat',
   };
 
-  // Create trajectory path - extremely small dots
+  // Create trajectory path - visible dots
   const trajectoryPoints = simulation.trajectory
     .slice(0, Math.floor(simulation.trajectory.length * 0.8))
     .map((pos) => ({
       lat: baseLat + (pos.y - 0.5) * 0.02,
       lng: baseLng + (pos.x - 0.5) * 0.02,
-      size: 0.1, // Extremely small
+      size: 0.5, // Visible size
       color: '#ef4444',
-      opacity: 0.5,
+      opacity: 0.6,
+      altitude: pos.altitude / 1000, // Match threat altitude
     }));
 
-  // Arc from facility to threat - make it more visible
+  // Arc from facility to threat - make it more visible with proper altitude
   const threatArc = {
     startLat: baseLat,
     startLng: baseLng,
     endLat: threatLat,
     endLng: threatLng,
     color: ['#ef4444'],
-    stroke: 3,
   };
 
   // Remove detection rings - they're causing rectangular artifacts and aren't needed for close-up view
@@ -111,9 +111,9 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
           pointsData={[facilityPoint, threatPoint, ...trajectoryPoints]}
           pointColor="color"
           pointRadius={(d: any) => {
-            // Make threat point pulse slightly for visibility (extremely small)
+            // Make threat point pulse for visibility
             if (d.label === 'Threat') {
-              const pulse = Math.sin(pulseTime / 500) * 0.05 + 0.15;
+              const pulse = Math.sin(pulseTime / 500) * 0.3 + 2;
               return pulse;
             }
             return d.size;
@@ -122,12 +122,13 @@ export const ThreatGlobeMap = ({ simulation, currentPosition }: ThreatGlobeMapPr
           pointLabel={(d: any) => d.label || ''}
           arcsData={[threatArc]}
           arcColor="color"
-          arcDashLength={0.3}
-          arcDashGap={0.3}
-          arcDashAnimateTime={2000}
-          arcStroke={3}
+          arcDashLength={0.4}
+          arcDashGap={0.2}
+          arcDashAnimateTime={1000}
+          arcStroke={5}
           arcCurveResolution={64}
-          arcAltitudeAutoScale={0.3}
+          arcAltitude={0.05}
+          arcAltitudeAutoScale={0.5}
           onGlobeReady={() => {
             if (globeEl.current) {
               // Standard view - no automatic zoom

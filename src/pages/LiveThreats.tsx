@@ -5,7 +5,7 @@ import { ThreatAlertBanner } from '../components/threats/ThreatAlertBanner';
 import { ThreatDetails } from '../components/threats/ThreatDetails';
 import { AIClassification } from '../components/threats/AIClassification';
 import { RecommendedActions } from '../components/threats/RecommendedActions';
-import { ThreatGlobeMap } from '../components/threats/ThreatGlobeMap';
+import { RadarScreen } from '../components/threats/RadarScreen';
 
 export const LiveThreats = () => {
   const navigate = useNavigate();
@@ -62,9 +62,9 @@ export const LiveThreats = () => {
       />
 
       <div className="grid grid-cols-3 gap-6">
-        {/* Globe Map */}
+        {/* Radar Screen */}
         <div className="col-span-2">
-          <ThreatGlobeMap simulation={simulation} currentPosition={currentPosition} />
+          <RadarScreen simulation={simulation} currentPosition={currentPosition} />
         </div>
 
         {/* Right Panel */}
